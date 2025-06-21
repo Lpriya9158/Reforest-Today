@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Footprint Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #302b2bbd;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .navbar a:hover {
+            color: #4bb45e;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            background: url('forest-bg.jpg') no-repeat center center/cover;
+            padding: 20px;
+        }
+
+        .tracker-box {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 400px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .tracker-box:hover {
+            transform: scale(1.03);
+        }
+
+        h1 {
+            color: #4bb45e;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+
+        .btn-calculate {
+            background-color: #4bb45e;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn-calculate:hover {
+            background-color: #3a9d3a;
+            transform: translateY(-3px);
+        }
+
+        #carbonOutput {
+            margin-top: 20px;
+            font-size: 1.4em;
+            color: #4bb45e;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        #carbonOutput.show {
+            opacity: 1;
+        }
+
+        .info-text {
+            font-size: 0.9em;
+            color: #212020;
+            margin-top: 10px;
+        }
+
+        .progress-container {
+            margin-top: 20px;
+            background-color: #f3f3f3;
+            border-radius: 20px;
+            height: 25px;
+            width: 100%;
+            border: 1px solid #ccc;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: #4bb45e;
+            border-radius: 20px;
+            transition: width 1s ease-in-out;
+        }
+
+        /* Tooltip for input guidance */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #292525;
+            color: #fff;
+            text-align: center;
+            padding: 5px 0;
+            border-radius: 6px;
+
+            /* Position the tooltip */
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; /* Place above the element */
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="carbon.html">Carbon Footprint Tracker</a>
+        <a href="treegrowth.html">Tree Growth Tracker</a>
+    </div>
+
+    <div class="container">
+        <div class="tracker-box">
+            <h1>Carbon Footprint Tracker</h1>
+            <p style="color:#3b3939">Estimate how much carbon your trees will offset!</p>
+
+            <label for="numTrees" style="color: #3b3939;">Number of Trees:</label>
+            <div class="tooltip">
+                <input type="number" id="numTrees" placeholder="Enter number of trees">
+                <span class="tooltiptext">Each tree absorbs ~21.77 kg CO2 per year</span>
+            </div>
+
+            <button class="btn-calculate" onclick="calculateCarbonOffset()">Estimate Carbon Offset</button>
+
+            <div id="carbonOutput"></div>
+            
+            <!-- Progress bar for visual feedback -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <p class="info-text">* On average, each tree absorbs 21.77 kg CO2 per year.</p>
+        </div>
+    </div>
+
+    <script>
+        function calculateCarbonOffset() {
+            const numTrees = document.getElementById('numTrees').value;
+            const avgCarbonSequestration = 21.77; // Average kg CO2/year per tree
+            const carbonOffset = numTrees * avgCarbonSequestration;
+            
+            const progressBar = document.getElementById('progressBar');
+            const carbonOutput = document.getElementById('carbonOutput');
+
+            // Display the calculated result
+            if (numTrees > 0) {
+                carbonOutput.innerText = `Estimated carbon offset: ${carbonOffset.toFixed(2)} kg CO2/year`;
+                carbonOutput.classList.add('show');
+                
+                // Update the progress bar
+                const progress = Math.min((carbonOffset / 1000) * 100, 100); // Max out at 100%
+                progressBar.style.width = progress + '%';
+            } else {
+                carbonOutput.innerText = 'Please enter a valid number of trees.';
+                carbonOutput.classList.add('show');
+                progressBar.style.width = '0%';
+            }
+        }
+    </script>
+</body>
+</html>
+

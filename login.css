@@ -1,0 +1,60 @@
+body {
+    font-family: Arial, sans-serif;
+    background:url(forest-backg.jpg); 
+    background-size: cover;
+  }
+  
+  .container {
+    max-width: 300px;
+    margin: 40px;
+    margin-top: 70px;
+    margin-left: 40%;
+    padding: 20px;
+    background-color: #ffffff; /* white background */
+    border: 1px solid #cccccc; /* light grey border */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-form, .signup-form {
+    text-align: center;
+  }
+  
+  h2 {
+    color: #34C759; /* green color */
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 10px;
+    color: #666666; /* grey color */
+  }
+  
+  input[type="text"], input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #cccccc; /* light grey border */
+  }
+  
+  input[type="submit"] {
+    background-color: #34C759; /* green color */
+    color: #ffffff; /* white color */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  input[type="submit"]:hover {
+    background-color: #28A745; /* darker green color */
+  }
+  
+  a {
+    text-decoration: none;
+    color: #34C759; /* green color */
+  }
+  
+  a:hover {
+    color: #28A745; /* darker green color */
+  }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Map - Reforest Today</title>
+    <style>
+        /* Basic styling for the map container */
+        #map {
+            height: 500px;  /* Set the height of the map */
+            width: 100%;    /* Set the width of the map */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Interactive Map of Pune</h1>
+    <div id="map"></div>  <!-- This is where the map will be displayed -->
+
+    <!-- Include the Google Maps JavaScript API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD3RclDhPfCJ9n4hgScmh1kK00p-msu2Ms&callback=initMap" async defer></script>
+    
+    <script>
+        // Initialize and add the map   
+        function initMap() {
+            // The location of Pune
+            const pune = { lat: 18.5204, lng: 73.8567 };
+            // The map, centered at Pune
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: pune,
+            });
+            // The marker, positioned at Pune
+            const marker = new google.maps.Marker({
+                position: pune,
+                map: map,
+                title: "Pune, India"
+            });
+
+            // Example: Adding a marker for Baner with soil information
+            const baner = { lat: 18.5583, lng: 73.7898 };
+            const markerBaner = new google.maps.Marker({
+                position: baner,
+                map: map,
+                title: "Baner"
+            });
+
+            const infoBaner = new google.maps.InfoWindow({
+                content: "<h3>Baner</h3><p>Soil Type: Black Soil<br>Recommended Plants: Banyan, Neem</p>"
+            });
+
+            markerBaner.addListener("click", () => {
+                infoBaner.open(map, markerBaner);
+            });
+
+            // Add more markers for other locations in Pune as needed
+        }
+    </script>
+
+</body>
+</html>

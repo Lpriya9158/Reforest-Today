@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search for Planting Locations</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        .navbar a:hover {
+            background-color: #4bb45e;
+            color: black;
+        }
+        
+
+        .search-map-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin: 20px;
+            margin-top: 10px;
+            height: 500px; /* Set a fixed height */
+        }
+
+        .search-container {
+            text-align: center;
+            padding: 23px;
+            margin-top: 13%;
+            margin-left: 2%;
+            margin-right: 10%;
+            width: 100%; /* Initially take full width */
+            transition: width 0.5s ease; /* Smooth transition */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #map {
+            display: none; /* Initially hide the map */
+            margin-top: 5%;
+            margin-bottom: 5%;
+            height: 141%;
+            width: 60%; /* Set the width to 50% when displayed */
+            transition: display 0.5s ease, width 0.5s ease; /* Smooth transition */
+        }
+
+        h3 {
+            color: rgb(8, 146, 8);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="carbon.html">Carbon Footprint Tracker</a>
+        <a href="treegrowth.html">Tree Growth Tracker</a>
+    </div>
+
+    <div class="search-map-container">
+        <div class="search-container">
+            <h1>Find the Best Plants for Pune</h1>
+            <input type="text" id="searchBar" placeholder="Enter a location in Pune...">
+            <div id="results">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+
+        <div id="map"></div>
+    </div>
+
+    <!-- Include the Google Maps JavaScript API    AIzaSyD3RclDhPfCJ9n4hgScmh1kK00p-msu2Ms -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD3RclDhPfCJ9n4hgScmh1kK00p-msu2Ms&callback=initMap" async defer></script>
+
+    <script>
+        let map;
+        let markers = [];
+        const locations = {
+            baner: { lat: 18.5583, lng: 73.7898, soil: "Black Soil", plants: "Banyan, Neem" },
+            kothrud: { lat: 18.5074, lng: 73.8077, soil: "Red Soil", plants: "Mango, Peepal" },
+            hadapsar: { lat: 18.5121, lng: 73.9275, soil: "Sandy Soil", plants: "Coconut, Palm" },
+            wagholi: { lat: 18.5800, lng: 74.0046, soil: "Loamy Soil", plants: "Guava, Papaya" },
+            hinjewadi: { lat: 18.5912, lng: 73.7386, soil: "Clay Soil", plants: "Teak, Eucalyptus" },
+            mulshi: { lat: 18.4927, lng: 73.5933, soil: "Red Soil", plants: "Jackfruit, Bamboo" },
+            bavdhan: { lat: 18.5172, lng: 73.7906, soil: "Alluvial Soil", plants: "Amla, Curry Leaves" },
+            yerwada: { lat: 18.5526, lng: 73.8776, soil: "Mixed Soil", plants: "Fig, Almond" },
+            shivane: { lat: 18.5002, lng: 73.7698, soil: "Black Cotton Soil", plants: "Neem, Peepal" },
+            pirangut: { lat: 18.5073, lng: 73.6595, soil: "Laterite Soil", plants: "Rubber, Cashew" },
+            warje: { lat: 18.5012, lng: 73.7753, soil: "Black Cotton Soil", plants: "Neem, Guava" },
+            pashan: { lat: 18.5284, lng: 73.8048, soil: "Laterite Soil", plants: "Coconut, Mango" },
+            sus: { lat: 18.5521, lng: 73.7543, soil: "Black Soil", plants: "Bamboo, Teak" },
+            bhugaon: { lat: 18.4505, lng: 73.7651, soil: "Clay Soil", plants: "Amla, Papaya" },
+            aundh: { lat: 18.5590, lng: 73.7545, soil: "Sandy Soil", plants: "Peepal, Banyan" },
+            khadakwasla: { lat: 18.4873, lng: 73.7313, soil: "Alluvial Soil", plants: "Coconut, Mango" },
+            manjri: { lat: 18.5263, lng: 73.9243, soil: "Loamy Soil", plants: "Guava, Fig" },
+            fursungi: { lat: 18.4583, lng: 73.9672, soil: "Black Cotton Soil", plants: "Neem, Papaya" },
+            kharadi: { lat: 18.5700, lng: 73.9285, soil: "Red Soil", plants: "Mango, Banyan" },
+            katraj: { lat: 18.4686, lng: 73.8555, soil: "Clay Soil", plants: "Teak, Eucalyptus" },
+            kondhwa: { lat: 18.5057, lng: 73.8978, soil: "Sandy Soil", plants: "Coconut, Palm" },
+            undri: { lat: 18.5021, lng: 73.9141, soil: "Black Cotton Soil", plants: "Neem, Amla" },
+            uruli_kanchan: { lat: 18.4230, lng: 73.8650, soil: "Red Soil", plants: "Guava, Papaya" },
+            lonikalbhor: { lat: 18.4666, lng: 73.8262, soil: "Loamy Soil", plants: "Bamboo, Fig" },
+            manjri_budruk: { lat: 18.5263, lng: 73.8837, soil: "Sandy Soil", plants: "Teak, Eucalyptus" },
+            pisoli: { lat: 18.4683, lng: 73.9038, soil: "Black Cotton Soil", plants: "Mango, Neem" },
+            wadgaon_sheri: { lat: 18.5581, lng: 73.8783, soil: "Clay Soil", plants: "Amla, Curry Leaves" },
+            dhanori: { lat: 18.5755, lng: 73.9181, soil: "Red Soil", plants: "Peepal, Banyan" },
+            phursungi: { lat: 18.4584, lng: 73.9321, soil: "Loamy Soil", plants: "Guava, Coconut" },
+            ambegaon_bk: { lat: 18.4090, lng: 73.8821, soil: "Sandy Soil", plants: "Bamboo, Fig" },
+            nanded: { lat: 18.5165, lng: 73.8980, soil: "Mixed Soil", plants: "Neem, Mango" },
+            parvati_paytha: { lat: 18.4940, lng: 73.8370, soil: "Black Soil", plants: "Teak, Eucalyptus" },
+            khed_shivapur: { lat: 18.5186, lng: 73.6781, soil: "Clay Soil", plants: "Coconut, Papaya" },
+            narhe: { lat: 18.4376, lng: 73.8837, soil: "Sandy Soil", plants: "Mango, Guava" },
+            dhayari: { lat: 18.4525, lng: 73.8044, soil: "Loamy Soil", plants: "Bamboo, Neem" },
+            dhankawadi: { lat: 18.4738, lng: 73.8987, soil: "Mixed Soil", plants: "Amla, Fig" },
+            ambegaon: { lat: 18.4006, lng: 73.8360, soil: "Red Soil", plants: "Papaya, Coconut" },
+            nibm: { lat: 18.4579, lng: 73.9080, soil: "Clay Soil", plants: "Teak, Mango" },
+            kondhwa_budruk: { lat: 18.4828, lng: 73.8724, soil: "Black Cotton Soil", plants: "Neem, Banyan" },
+            yewalewadi: { lat: 18.4852, lng: 73.9164, soil: "Loamy Soil", plants: "Guava, Amla" },
+            chikhali: { lat: 18.5854, lng: 73.9917, soil: "Sandy Soil", plants: "Mango, Coconut" },
+            lohegaon: { lat: 18.5757, lng: 73.9220, soil: "Red Soil", plants: "Bamboo, Fig" },
+            wagholi_budruk: { lat: 18.5770, lng: 73.9251, soil: "Black Cotton Soil", plants: "Neem, Papaya" },
+            uruli_devachi: { lat: 18.4346, lng: 73.8904, soil: "Mixed Soil", plants: "Amla, Teak" },
+            bopodi: { lat: 18.5350, lng: 73.8664, soil: "Alluvial Soil", plants: "Coconut, Mango" },
+            khadki: { lat: 18.5836, lng: 73.8490, soil: "Clay Soil", plants: "Guava, Banyan" },
+            deccan_gymkhana: { lat: 18.5194, lng: 73.8556, soil: "Loamy Soil", plants: "Neem, Papaya" },
+            karvenagar: { lat: 18.5194, lng: 73.8140, soil: "Sandy Soil", plants: "Teak, Eucalyptus" },
+            gorhe_kh: { lat: 18.4820, lng: 73.6848, soil: "Red Soil", plants: "Fig, Amla" },
+            gujar_nimbalkarwadi: { lat: 18.5807, lng: 73.6647, soil: "Clay Soil", plants: "Bamboo, Coconut" },
+            hingangaon: { lat: 18.5627, lng: 73.7073, soil: "Sandy Soil", plants: "Mango, Neem" },
+            holkarwadi: { lat: 18.5660, lng: 73.7360, soil: "Mixed Soil", plants: "Papaya, Guava" },
+            jambhali: { lat: 18.6263, lng: 73.6877, soil: "Alluvial Soil", plants: "Coconut, Banyan" },
+            jambhulwadi: { lat: 18.6152, lng: 73.7148, soil: "Black Cotton Soil", plants: "Neem, Amla" },
+            kadamwak_wasti: { lat: 18.6396, lng: 73.8219, soil: "Red Soil", plants: "Teak, Fig" },
+            kalyan: { lat: 19.2183, lng: 73.1350, soil: "Clay Soil", plants: "Mango, Coconut" },
+            kesnand: { lat: 18.5636, lng: 73.9067, soil: "Sandy Soil", plants: "Papaya, Amla" },
+            khadakwasala: { lat: 18.4873, lng: 73.7313, soil: "Alluvial Soil", plants: "Coconut, Mango" },
+            khanapur: { lat: 18.5189, lng: 73.7275, soil: "Black Cotton Soil", plants: "Neem, Papaya" },
+            khed: { lat: 18.5328, lng: 73.7543, soil: "Red Soil", plants: "Teak, Guava" },
+            kirkitwadi: { lat: 18.5585, lng: 73.8034, soil: "Mixed Soil", plants: "Bamboo, Fig" },
+            kolewadi: { lat: 18.5927, lng: 73.8350, soil: "Clay Soil", plants: "Coconut, Banyan" },
+            kolwadi: { lat: 18.5952, lng: 73.7753, soil: "Sandy Soil", plants: "Neem, Amla" },
+            kondhanpur: { lat: 18.6425, lng: 73.8093, soil: "Loamy Soil", plants: "Guava, Teak" },
+            kopare: { lat: 18.5973, lng: 73.6822, soil: "Black Cotton Soil", plants: "Papaya, Mango" },
+            koregaon_mul: { lat: 18.5417, lng: 73.8367, soil: "Red Soil", plants: "Amla, Fig" },
+            kudaje: { lat: 18.5379, lng: 73.6460, soil: "Clay Soil", plants: "Neem, Eucalyptus" },
+            kunjirwadi: { lat: 18.6463, lng: 73.7368, soil: "Sandy Soil", plants: "Bamboo, Coconut" },
+            lahagaon: { lat: 18.5263, lng: 73.7652, soil: "Mixed Soil", plants: "Mango, Teak" },
+            loni_kalbhor: { lat: 18.4506, lng: 73.8537, soil: "Alluvial Soil", plants: "Guava, Neem" },
+            loni_kand: { lat: 18.5840, lng: 73.6756, soil: "Red Soil", plants: "Papaya, Fig" },
+            malinagar: { lat: 18.4796, lng: 73.8443, soil: "Clay Soil", plants: "Neem, Amla" },
+            mangadewadi: { lat: 18.5178, lng: 73.7525, soil: "Sandy Soil", plants: "Coconut, Guava" },
+            manjari_bk: { lat: 18.5332, lng: 73.8912, soil: "Loamy Soil", plants: "Bamboo, Fig" },
+            manjari_kh: { lat: 18.5650, lng: 73.9195, soil: "Black Cotton Soil", plants: "Neem, Papaya" },
+            mundhawa: { lat: 18.5733, lng: 73.9205, soil: "Mixed Soil", plants: "Amla, Teak" },
+            nahre: { lat: 18.5847, lng: 73.8800, soil: "Red Soil", plants: "Bamboo, Guava" },
+            nanded: { lat: 18.5165, lng: 73.8980, soil: "Clay Soil", plants: "Coconut, Mango" },
+            naigaon: { lat: 18.4594, lng: 73.8500, soil: "Sandy Soil", plants: "Papaya, Amla" },
+            nandoshi: { lat: 18.5517, lng: 73.7634, soil: "Loamy Soil", plants: "Neem, Banyan" },
+            nhavi_sandas: { lat: 18.4871, lng: 73.8264, soil: "Alluvial Soil", plants: "Coconut, Fig" },
+            pashan: { lat: 18.5284, lng: 73.8048, soil: "Laterite Soil", plants: "Coconut, Mango" },
+            perane: { lat: 18.5072, lng: 73.8313, soil: "Black Cotton Soil", plants: "Neem, Amla" },
+            pisoli: { lat: 18.4683, lng: 73.9038, soil: "Black Cotton Soil", plants: "Mango, Neem" },
+            pimpri_sandas: { lat: 18.6194, lng: 73.7401, soil: "Sandy Soil", plants: "Teak, Guava" },
+            ramnagar: { lat: 18.4911, lng: 73.8853, soil: "Red Soil", plants: "Papaya, Banyan" },
+            shewalwadi: { lat: 18.4689, lng: 73.9155, soil: "Mixed Soil", plants: "Coconut, Amla" },
+            shindwane: { lat: 18.6043, lng: 73.8384, soil: "Clay Soil", plants: "Neem, Fig" },
+            tulapur: { lat: 18.4531, lng: 73.7038, soil: "Alluvial Soil", plants: "Mango, Coconut" },
+            viman_nagar: { lat: 18.5582, lng: 73.9146, soil: "Clay Soil", plants: "Papaya, Teak" }, // Viman Nagar
+            vishrantwadi: { lat: 18.5770, lng: 73.9173, soil: "Black Cotton Soil", plants: "Neem, Coconut" }, // Vishrantwadi
+            magarpatta: { lat: 18.5372, lng: 73.9261, soil: "Loamy Soil", plants: "Mango, Guava" }, // Magarpatta
+            kalyani_nagar: { lat: 18.5581, lng: 73.9306, soil: "Sandy Soil", plants: "Amla, Curry Leaves" }, // Kalyani Nagar
+            koregaon_park: { lat: 18.5487, lng: 73.9195, soil: "Loamy Soil", plants: "Neem, Coconut" }, // Koregaon Park
+            ghorpadi: { lat: 18.5095, lng: 73.9197, soil: "Clay Soil", plants: "Bamboo, Jackfruit" }, // Ghorpadi
+            chandan_nagar: { lat: 18.5316, lng: 73.9269, soil: "Red Soil", plants: "Peepal, Fig" }, // Chandan Nagar
+        };
+
+
+        function initMap() {
+            // Initialize the map, but keep it hidden initially
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: { lat: 18.5204, lng: 73.8567 }, // Default center (Pune)
+            });
+        }
+
+        document.getElementById('searchBar').addEventListener('input', function () {
+            const query = this.value.toLowerCase();
+            const results = document.getElementById('results');
+            results.innerHTML = '';
+
+            if (locations[query]) {
+                // Show the map and resize the layout
+                document.getElementById('map').style.display = 'block';
+                document.getElementById('map').style.width = '50%'; // Ensure the map takes up half the screen
+                document.querySelector('.search-container').style.width = '50%'; // Shift to left side
+
+                // Clear previous markers
+                clearMarkers();
+
+                // Set new marker
+                const position = locations[query];
+                const marker = new google.maps.Marker({
+                    position,
+                    map,
+                    title: capitalizeFirstLetter(query)
+                });
+
+                markers.push(marker);
+
+                const infoWindowContent = `
+                    <div style="color: green;background:rgb(92,229,92); padding: 10px; border-radius: 5px;">
+                        <h3>${capitalizeFirstLetter(query)}</h3>
+                        <p>Soil Type: ${position.soil}<br>Recommended Plants: ${position.plants}</p>
+                    </div>
+                `;
+                const infoWindow = new google.maps.InfoWindow({
+                    content: infoWindowContent
+                });
+
+                // Center map to the searched location, zoom in, and show InfoWindow
+                map.setCenter(position);
+                map.setZoom(15);
+
+                // Automatically open the InfoWindow after the map zooms in
+                google.maps.event.addListenerOnce(map, 'idle', () => {
+                    infoWindow.open(map, marker);
+                });
+
+                // Display the search result in the results div
+                results.innerHTML = `<p>Soil Type: ${position.soil}<br>Recommended Plants: ${position.plants}</p>`;
+            } else {
+                // Hide the map if no valid location is found
+                document.getElementById('map').style.display = 'none';
+                document.querySelector('.search-container').style.width = '100%'; // Restore full width
+                results.innerHTML = '<p>No results found.</p>';
+            }
+        });
+
+        function clearMarkers() {
+            for (let i = 0; i < markers.length; i++) {
+                markers[i].setMap(null);
+            }
+            markers = [];
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Care Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://source.unsplash.com/1600x900/?forest,green') no-repeat center center/cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .chatbot-container {
+            width: 400px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: #4CAF50;
+            color: white;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .chat-body {
+            height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-input-container {
+            display: flex;
+            padding: 10px;
+            background: white;
+            border-top: 1px solid #ccc;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .send-btn, .voice-btn {
+            margin-left: 8px;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .send-btn, .voice-btn {
+            width: 50px;
+        }
+
+        .message {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+
+        .user-message {
+            background: #d1e7dd;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background: #f1f1f1;
+            align-self: flex-start;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chatbot-container">
+        <div class="chat-header">
+            <button class="back-btn" onclick="goBack()">⬅ Back</button>
+            <span>🌿 Plant Care Chatbot</span>
+        </div>
+        <div class="chat-body" id="chat-body"></div>
+        <div class="chat-input-container">
+            <input type="text" id="user-input" placeholder="Type your question..." class="chat-input">
+            <button class="send-btn" onclick="sendMessage()">📩</button>
+            <button class="voice-btn" onclick="startVoiceInput()">🎤</button>
+        </div>
+    </div>
+
+<script>
+    function goBack() {
+        window.location.href = "index.html";
+    }
+
+    async function sendMessage() {
+        var userInput = document.getElementById("user-input").value.trim();
+        if (!userInput) return;
+
+        var chatBody = document.getElementById("chat-body");
+
+        chatBody.innerHTML += `<div class="message user-message"><strong>You:</strong> ${userInput}</div>`;
+        document.getElementById("user-input").value = "";
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        var botResponse = await getBotResponse(userInput);
+        chatBody.innerHTML += `<div class="message bot-message"><strong>Bot:</strong> ${botResponse}</div>`;
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    async function getBotResponse(input) {
+        try {
+            const API_KEY = "AIzaSyA2C_mHoV39drdh-GbETSCwi6KxmBPFPGA"; // Replace with your API key securely
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=${API_KEY}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: [{ parts: [{ text: input }] }] })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't find an answer.";
+        } catch (error) {
+            console.error("API Error:", error);
+            return "Error: Unable to fetch response.";
+        }
+    }
+
+    function startVoiceInput() {
+        var recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.start();
+
+        recognition.onresult = function(event) {
+            var transcript = event.results[0][0].transcript;
+            document.getElementById("user-input").value = transcript;
+            sendMessage();
+        };
+    }
+</script>
+
+</body>
+</html>

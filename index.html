@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reforest Today</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="carbon.html">Carbon Footprint Tracker</a>
+        <a href="treegrowth.html">Tree Growth Tracker</a>
+        <a href="login.html">Log out</a>
+    </div>
+
+    <div class="container">
+        <h1 align="center">Welcome to <i>"Reforest Pune"</i></h1>
+        <p>
+            Pune is blessed with diverse soil types, each capable of nurturing a unique range of trees. By planting the right tree in the right place, you contribute to a healthier environment, improve air quality, and enhance the beauty of our city.
+            Join us in our mission to restore Pune's green cover, one tree at a time.
+        </p>
+
+        <button id="plantNowBtn" align="center">Plant now</button>
+    </div>
+
+    <script>
+        document.getElementById('plantNowBtn').addEventListener('click', function() {
+            window.location.href = 'search.html';
+        });
+    </script>
+  <!-- Chatbot Toggle Button -->
+  <button class="toggle-btn" onclick="toggleChat()">💬 Ask Refrobot!</button>
+
+<script>
+   function toggleChat() {
+    window.location.href = "chatbot.html"; // Redirect to chatbot page
+}
+</script>
+
+
+</body>
+</html>

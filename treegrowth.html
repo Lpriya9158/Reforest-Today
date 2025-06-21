@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Growth Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="carbon.html">Carbon Footprint Tracker</a>
+        <a href="treegrowth.html">Tree Growth Tracker</a>
+    </div>
+
+    <div class="container">
+        <h1>Tree Growth Tracker</h1>
+        <div class="tracker-form">
+            <h2>Track Your Tree Growth</h2>
+            <form id="growthForm">
+                <label for="treeName">Tree Name:</label>
+                <input type="text" id="treeName" placeholder="Enter tree name">
+                <label for="imageUpload">Upload Tree Image:</label>
+                <input type="file" id="imageUpload" accept="image/*">
+                <button type="submit">Track Tree</button>
+            </form>
+            <p id="trackerOutput"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('growthForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const treeName = document.getElementById('treeName').value;
+            const imageUpload = document.getElementById('imageUpload').files[0];
+
+            if (treeName && imageUpload) {
+                document.getElementById('trackerOutput').innerText = `${treeName} has been registered.`;
+            } else {
+                document.getElementById('trackerOutput').innerText = 'Please fill in all fields.';
+            }
+        });
+    </script>
+</body>
+</html>
+
